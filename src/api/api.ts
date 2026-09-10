@@ -1,4 +1,5 @@
 import { buscarToken } from './token';
+import { fetch as expoFetch } from 'expo/fetch';
 
 export const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://192.168.1.11/librashub-api';
 export const MEDIA_URL = process.env.EXPO_PUBLIC_MEDIA_URL ?? API_URL.replace(/\/librashub-api\/?$/, '');
@@ -28,9 +29,24 @@ export async function apiFetch<T>(endpoint: string, { autenticado = true, ...opt
 
   let response: Response;
   try {
-    response = await fetch(`${API_URL}/${endpoint}`, { ...options, headers });
-  } catch {
-    throw new ApiError('Não foi possível acessar a API. Verifique o XAMPP, o IP e a rede Wi-Fi.', 0);
+    response = await expoFetch(`${API_URL}/${endpoint}`, {
+      ...options,
+      headers,
+    });
+  } catch (erro) {
+    console.error(
+      'Falha na requisição:',
+      erro,
+      'URL:',
+      `${API_URL}/${endpoint}`,
+    );
+
+    throw new ApiError(
+      erro instanceof Error
+        ? erro.message
+        : 'Não foi possível acessar a API.',
+      0,
+    );
   }
 
   const texto = await response.text();
