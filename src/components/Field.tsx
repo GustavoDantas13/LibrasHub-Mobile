@@ -2,10 +2,9 @@ import React from 'react';
 import { ScrollView, StatusBar, TextInput, TouchableOpacity, View } from 'react-native';
 import Text from './AppText';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { COLORS } from '../constants/colors';
 import { IconType } from '../types';
 import { ChevronLeft } from './Icons';
-import { styles } from '../styles/styles';
+import { useAppTheme } from '../contexts/ThemeContext';
 export default function Field({
   label,
   value,
@@ -23,16 +22,17 @@ export default function Field({
   multiline?: boolean;
   icon?: IconType;
 }) {
+  const { colors, styles } = useAppTheme();
   return (
     <View style={styles.fieldWrap}>
       <Text style={styles.fieldLabel}>{label}</Text>
       <View style={styles.inputShell}>
-        {Icon && <Icon size={17} color="#7B8495" strokeWidth={1.9} style={{ marginLeft: 12 }} />}
+        {Icon && <Icon size={17} color={colors.subtleText} strokeWidth={1.9} style={{ marginLeft: 12 }} />}
         <TextInput
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
-          placeholderTextColor="#7B8495"
+          placeholderTextColor={colors.subtleText}
           secureTextEntry={secureTextEntry}
           multiline={multiline}
           style={[styles.inputBare, multiline && styles.textarea]}
@@ -41,5 +41,4 @@ export default function Field({
     </View>
   );
 }
-
 

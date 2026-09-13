@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { StatusBar, TouchableOpacity, View } from 'react-native';
 import Text from '../components/AppText';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { COLORS } from '../constants/colors';
 import { INITIAL_HISTORY, MOCK_USER } from '../constants/data';
 import { FontSize, Page } from '../types';
 import AuthLayout from '../components/AuthLayout';
@@ -13,8 +12,9 @@ import ScreenTitle from '../components/ScreenTitle';
 import SettingSwitch from '../components/SettingSwitch';
 import Stat from '../components/Stat';
 import { AlertTriangle, ArrowRight, Camera, CheckCircle, ChevronDown, Clock, Eye, FileVideo, Heart, HelpCircle, ImageIcon, LogOut, Mail, Search, Send, Settings, Sparkles, Trash2, Upload, User, UserPlus } from '../components/Icons';
-import { styles } from '../styles/styles';
+import { useAppTheme } from '../contexts/ThemeContext';
 export default function Landing({ setPage }: { setPage: (p: Page) => void }) {
+  const { colors, styles } = useAppTheme();
   const [slide, setSlide] = useState(0);
   const pages = [
     {
@@ -34,7 +34,7 @@ export default function Landing({ setPage }: { setPage: (p: Page) => void }) {
 
   return (
     <SafeAreaView edges={['top', 'bottom']} style={styles.landing}>
-      <StatusBar barStyle="light-content" backgroundColor={COLORS.navy} />
+      <StatusBar barStyle="light-content" backgroundColor={colors.navy} />
       <View style={styles.landingTop}>
         <Logo dark />
         <TouchableOpacity onPress={() => setPage('login')} style={styles.yellowPill}>
@@ -43,7 +43,7 @@ export default function Landing({ setPage }: { setPage: (p: Page) => void }) {
       </View>
       <View style={styles.hero}>
         <View style={styles.badge}>
-          <Sparkles size={14} color={COLORS.yellow} />
+          <Sparkles size={14} color={colors.yellow} />
           <Text style={styles.badgeText}>Tecnologia assistiva para conexão sem barreiras</Text>
         </View>
         <Text style={styles.heroTitle}>{item.title}</Text>
@@ -57,11 +57,10 @@ export default function Landing({ setPage }: { setPage: (p: Page) => void }) {
           onPress={() => (slide < 2 ? setSlide(slide + 1) : setPage('login'))}
         />
         <TouchableOpacity onPress={() => setPage('login')} style={styles.ghostButton}>
-          <Eye size={17} color="#fff" />
+          <Eye size={17} color={colors.onNavy} />
           <Text style={styles.ghostButtonText}>Testar tradução</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 }
-

@@ -2,10 +2,9 @@ import React from 'react';
 import { ScrollView, StatusBar, TextInput, TouchableOpacity, View } from 'react-native';
 import Text from './AppText';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { COLORS } from '../constants/colors';
 import { IconType } from '../types';
 import { ChevronLeft } from './Icons';
-import { styles } from '../styles/styles';
+import { useAppTheme } from '../contexts/ThemeContext';
 export default function Button({
   title,
   onPress,
@@ -21,6 +20,7 @@ export default function Button({
   disabled?: boolean;
   icon?: IconType;
 }) {
+  const { colors, styles } = useAppTheme();
   return (
     <TouchableOpacity
       activeOpacity={0.8}
@@ -33,10 +33,9 @@ export default function Button({
         disabled && { opacity: 0.45 },
       ]}
     >
-      {Icon && <Icon size={17} color={secondary ? COLORS.text : '#fff'} strokeWidth={2} />}
+      {Icon && <Icon size={17} color={secondary ? colors.text : colors.onPrimary} strokeWidth={2} />}
       <Text style={[styles.buttonText, secondary && styles.buttonSecondaryText]}>{title}</Text>
     </TouchableOpacity>
   );
 }
-
 

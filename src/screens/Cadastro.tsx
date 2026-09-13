@@ -7,9 +7,10 @@ import AuthLayout from '../components/AuthLayout';
 import Button from '../components/Button';
 import Field from '../components/Field';
 import { Mail, User, UserPlus } from '../components/Icons';
-import { styles } from '../styles/styles';
+import { useAppTheme } from '../contexts/ThemeContext';
 
 export default function Cadastro({ setPage }: { setPage: (p: Page) => void }) {
+  const { styles } = useAppTheme();
   const { cadastrar } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');

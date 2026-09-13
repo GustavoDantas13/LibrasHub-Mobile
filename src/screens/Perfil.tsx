@@ -8,7 +8,7 @@ import Button from '../components/Button';
 import Field from '../components/Field';
 import Stat from '../components/Stat';
 import { AlertTriangle, Clock, LogOut, Settings, Trash2 } from '../components/Icons';
-import { styles } from '../styles/styles';
+import { useAppTheme } from '../contexts/ThemeContext';
 
 function formatarData(valor?: string) {
   if (!valor) return '—';
@@ -17,6 +17,7 @@ function formatarData(valor?: string) {
 }
 
 export default function Perfil({ setPage }: { setPage: (p: Page) => void }) {
+  const { colors, styles } = useAppTheme();
   const { usuario, sair, atualizarPerfil, excluirConta } = useAuth();
   const [name, setName] = useState(usuario?.nm_usuario ?? '');
   const [email, setEmail] = useState(usuario?.email_usuario ?? '');
@@ -72,6 +73,6 @@ export default function Perfil({ setPage }: { setPage: (p: Page) => void }) {
       <Text style={styles.fieldLabel}>Tipo de Usuário</Text><Text style={styles.infoBox}>{usuario.tp_usuario}</Text>
       <Text style={styles.tinyMuted}>Membro desde {formatarData(usuario.dt_usuario)}</Text>
     </View>
-    <View style={styles.dangerCard}><View style={styles.sectionTitleRow}><AlertTriangle size={17} color="#B42318" /><Text style={styles.dangerText}>Zona de Perigo</Text></View><Button title="Excluir Conta" icon={Trash2} danger onPress={confirmarExclusao} /></View>
+    <View style={styles.dangerCard}><View style={styles.sectionTitleRow}><AlertTriangle size={17} color={colors.danger} /><Text style={styles.dangerText}>Zona de Perigo</Text></View><Button title="Excluir Conta" icon={Trash2} danger onPress={confirmarExclusao} /></View>
   </View>;
 }

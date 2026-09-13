@@ -1,31 +1,18 @@
 import React, { useState } from 'react';
-import { Alert, ScrollView, TextInput, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import Text from '../components/AppText';
-import { COLORS } from '../constants/colors';
-import { INITIAL_HISTORY, MOCK_USER } from '../constants/data';
-import { FontSize, Page } from '../types';
-import AuthLayout from '../components/AuthLayout';
-import Button from '../components/Button';
-import Field from '../components/Field';
-import Logo from '../components/Logo';
+import { FontSize } from '../types';
 import ScreenTitle from '../components/ScreenTitle';
 import SettingSwitch from '../components/SettingSwitch';
-import Stat from '../components/Stat';
-import { AlertTriangle, ArrowRight, Camera, CheckCircle, ChevronDown, Clock, Eye, FileVideo, Heart, HelpCircle, ImageIcon, LogOut, Mail, Search, Send, Settings, Sparkles, Trash2, Upload, User, UserPlus } from '../components/Icons';
-import { styles } from '../styles/styles';
 import { useFontSizePreference } from '../accessibility/fontPreference';
-export default function SettingsPage({
-  darkMode, setDarkMode, setFontSize: setAppFontSize, highContrast, setHighContrast,
-}: {
-  darkMode: boolean; setDarkMode: (v: boolean) => void;
-  fontSize: FontSize; setFontSize: (v: FontSize) => void;
-  highContrast: boolean; setHighContrast: (v: boolean) => void;
-}) {
+import { useAppTheme } from '../contexts/ThemeContext';
+
+export default function SettingsPage() {
   const [notifications, setNotifications] = useState(true);
   const { fontSize, setFontSize } = useFontSizePreference();
+  const { darkMode, setDarkMode, highContrast, setHighContrast, styles } = useAppTheme();
 
   function alterarFonte(valor: FontSize) {
-    setAppFontSize(valor);
     void setFontSize(valor);
   }
   return <View>

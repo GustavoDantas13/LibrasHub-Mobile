@@ -7,7 +7,7 @@ import Button from '../components/Button';
 import ScreenTitle from '../components/ScreenTitle';
 import { CheckCircle, FileVideo, ImageIcon, Trash2, Upload, Volume2 } from '../components/Icons';
 import { analisarMidias, MidiaSelecionada, ResultadoMidia } from '../api/traducao';
-import { styles } from '../styles/styles';
+import { useAppTheme } from '../contexts/ThemeContext';
 
 function tipoMidia(asset: ImagePicker.ImagePickerAsset) {
   if (asset.mimeType) return asset.mimeType;
@@ -15,6 +15,7 @@ function tipoMidia(asset: ImagePicker.ImagePickerAsset) {
 }
 
 export default function UploadPage() {
+  const { colors, styles } = useAppTheme();
   const [files, setFiles] = useState<MidiaSelecionada[]>([]);
   const [loading, setLoading] = useState(false);
   const [resultados, setResultados] = useState<ResultadoMidia[]>([]);
@@ -60,14 +61,14 @@ export default function UploadPage() {
   return <View>
     <ScreenTitle title="Upload" subtitle="Envie imagens ou vídeos para tradução" />
     <TouchableOpacity onPress={pick} disabled={loading} style={styles.uploadBox}>
-      {files.length ? <CheckCircle size={42} color="#16A34A" /> : <View style={styles.fileIcons}><FileVideo size={34} color="#7B8495" /><ImageIcon size={34} color="#7B8495" /></View>}
+      {files.length ? <CheckCircle size={42} color={colors.success} /> : <View style={styles.fileIcons}><FileVideo size={34} color={colors.subtleText} /><ImageIcon size={34} color={colors.subtleText} /></View>}
       <Text style={styles.cardHeading}>{files.length ? `${files.length} arquivo(s) selecionado(s)` : 'Toque para selecionar arquivos'}</Text>
       <Text style={styles.muted}>JPG, JPEG, PNG, WEBP, MP4, AVI, MOV e MKV</Text>
     </TouchableOpacity>
     {files.map((arquivo, indice) => <View key={`${arquivo.uri}-${indice}`} style={styles.selectedFileRow}>
-      {arquivo.tipo.startsWith('video/') ? <FileVideo size={20} color="#7B8495" /> : <ImageIcon size={20} color="#7B8495" />}
+      {arquivo.tipo.startsWith('video/') ? <FileVideo size={20} color={colors.subtleText} /> : <ImageIcon size={20} color={colors.subtleText} />}
       <View style={{ flex: 1 }}><Text style={styles.cardHeading} numberOfLines={1}>{arquivo.nome}</Text>{arquivo.tamanho ? <Text style={styles.tinyMuted}>{(arquivo.tamanho / 1024 / 1024).toFixed(2)} MB</Text> : null}</View>
-      <TouchableOpacity disabled={loading} onPress={() => setFiles((atuais) => atuais.filter((_, i) => i !== indice))}><Trash2 size={18} color="#B42318" /></TouchableOpacity>
+      <TouchableOpacity disabled={loading} onPress={() => setFiles((atuais) => atuais.filter((_, i) => i !== indice))}><Trash2 size={18} color={colors.danger} /></TouchableOpacity>
     </View>)}
     {files.length > 0 && <View style={styles.row}>
       <View style={{ flex: 1 }}><Button title={loading ? 'Processando...' : 'Traduzir arquivos'} icon={Upload} disabled={loading} onPress={translate} /></View>
@@ -77,7 +78,7 @@ export default function UploadPage() {
       <Text style={styles.fieldLabel}>Resultados</Text>
       {resultados.map((item, indice) => <View key={`${item.arquivo}-${indice}`} style={styles.translationResultRow}>
         <Text style={styles.tinyMuted} numberOfLines={1}>{item.arquivo || files[indice]?.nome || `Arquivo ${indice + 1}`}</Text>
-        <Text style={[styles.resultText, item.valido === false && { color: '#B42318' }]}>{item.gesto || item.erro || 'Não reconhecido'}{Number.isFinite(Number(item.confianca)) ? ` (${Number(item.confianca).toFixed(2)}%)` : ''}</Text>
+        <Text style={[styles.resultText, item.valido === false && { color: colors.danger }]}>{item.gesto || item.erro || 'Não reconhecido'}{Number.isFinite(Number(item.confianca)) ? ` (${Number(item.confianca).toFixed(2)}%)` : ''}</Text>
       </View>)}
     </View>}
     {frase ? <View style={[styles.card, { marginTop: 12 }]}><Text style={styles.fieldLabel}>Frase completa</Text><Text style={styles.resultText}>{frase}</Text><Button title="Ouvir frase" icon={Volume2} secondary onPress={() => Speech.speak(frase, { language: 'pt-BR' })} /></View> : null}

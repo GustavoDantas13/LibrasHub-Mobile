@@ -1,10 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, StatusBar, TouchableOpacity, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import IconButton from './src/components/IconButton';
 import Logo from './src/components/Logo';
 import { Clock, Eye, HelpCircle, Menu, Settings, Share2, Upload, User } from './src/components/Icons';
-import { COLORS } from './src/constants/colors';
 import Ajuda from './src/screens/Ajuda';
 import Cadastro from './src/screens/Cadastro';
 import Configuracoes from './src/screens/Configuracoes';
@@ -16,9 +15,9 @@ import Login from './src/screens/Login';
 import Perfil from './src/screens/Perfil';
 import Social from './src/screens/Social';
 import UploadPage from './src/screens/Upload';
-import { styles } from './src/styles/styles';
-import { FontSize, IconType, Page } from './src/types';
+import { IconType, Page } from './src/types';
 import { AuthProvider, useAuth } from './src/contexts/AuthContext';
+import { ThemeProvider, useAppTheme } from './src/contexts/ThemeContext';
 import Text from './src/components/AppText';
 
 const NAV: { page: Page; label: string; icon: IconType }[] = [
@@ -28,15 +27,9 @@ const NAV: { page: Page; label: string; icon: IconType }[] = [
 function MainApp() {
   const insets = useSafeAreaInsets();
   const { usuario, carregando } = useAuth();
+  const { colors, styles, highContrast } = useAppTheme();
   const [page, setPage] = useState<Page>('landing');
   const [menuOpen, setMenuOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
-  const [fontSize, setFontSize] = useState<FontSize>('normal');
-  const [highContrast, setHighContrast] = useState(false);
-
-  const theme = useMemo(() => ({
-    bg: darkMode ? '#0A101C' : COLORS.bg,
-  }), [darkMode, highContrast]);
 
   useEffect(() => {
     const paginasPublicas: Page[] = ['landing', 'login', 'cadastro', 'esqueci-senha'];
@@ -45,7 +38,7 @@ function MainApp() {
   }, [usuario, carregando, page]);
 
   if (carregando) {
-    return <View style={[styles.app, { alignItems: 'center', justifyContent: 'center', backgroundColor: COLORS.navy }]}><ActivityIndicator color={COLORS.yellow} size="large" /></View>;
+    return <View style={[styles.app, { alignItems: 'center', justifyContent: 'center', backgroundColor: colors.navy }]}><ActivityIndicator color={colors.yellow} size="large" /></View>;
   }
 
   if (page === 'landing') return <Landing setPage={setPage} />;
@@ -61,7 +54,7 @@ function MainApp() {
       case 'historico': return <Historico />;
       case 'ajuda': return <Ajuda />;
       case 'perfil': return <Perfil setPage={setPage} />;
-      case 'configuracoes': return <Configuracoes darkMode={darkMode} setDarkMode={setDarkMode} fontSize={fontSize} setFontSize={setFontSize} highContrast={highContrast} setHighContrast={setHighContrast} />;
+      case 'configuracoes': return <Configuracoes />;
       default: return <Social />;
     }
   })();
@@ -74,8 +67,8 @@ function MainApp() {
   ];
 
   return (
-    <View style={[styles.app, { backgroundColor: theme.bg }]}>
-      <StatusBar barStyle="light-content" backgroundColor={COLORS.navy} />
+    <View style={[styles.app, { backgroundColor: colors.bg }]}>
+      <StatusBar barStyle="light-content" backgroundColor={colors.navy} />
 
       <SafeAreaView edges={['top']} style={styles.topSafeArea}>
         <View style={styles.header}>
@@ -96,7 +89,7 @@ function MainApp() {
             const Icon = n.icon;
             const active = page === n.page;
             return <TouchableOpacity key={n.page} onPress={() => { setPage(n.page); setMenuOpen(false); }} style={[styles.menuItem, active && styles.menuItemActive]}>
-              <View style={[styles.menuIconBox, active && styles.menuIconBoxActive]}><Icon size={18} color={active ? COLORS.primary : '#fff'} strokeWidth={2} /></View>
+              <View style={[styles.menuIconBox, active && styles.menuIconBoxActive]}><Icon size={18} color={active ? colors.primary : colors.onNavy} strokeWidth={2} /></View>
               <Text style={[styles.menuItemText, active && styles.menuItemTextActive]}>{n.label}</Text>
             </TouchableOpacity>;
           })}
@@ -116,7 +109,7 @@ function MainApp() {
           const Icon = n.icon;
           const active = page === n.page;
           return <TouchableOpacity key={n.page} onPress={() => setPage(n.page)} style={[styles.navItem, active && styles.navItemActive]}>
-            <Icon size={19} color={active ? COLORS.primary : '#A8B2C2'} strokeWidth={2} />
+            <Icon size={19} color={active ? colors.primary : colors.navMuted} strokeWidth={highContrast ? 3 : 2} />
             <Text style={[styles.navLabel, active && styles.navLabelActive]}>{n.label}</Text>
           </TouchableOpacity>;
         })}
@@ -127,5 +120,5 @@ function MainApp() {
 
 
 export default function App() {
-  return <SafeAreaProvider><AuthProvider><MainApp /></AuthProvider></SafeAreaProvider>;
+  return <SafeAreaProvider><ThemeProvider><AuthProvider><MainApp /></AuthProvider></ThemeProvider></SafeAreaProvider>;
 }

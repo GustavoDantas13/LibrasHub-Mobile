@@ -1,11 +1,13 @@
 import React from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { useAppTheme } from '../contexts/ThemeContext';
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 
 function createIcon(name: IoniconName): React.ComponentType<any> {
-  return ({ size = 24, color = '#172033', strokeWidth: _strokeWidth, ...props }: any) => (
-    <Ionicons name={name} size={size} color={color} {...props} />
-  );
+  return function AppIcon({ size = 24, color, strokeWidth: _strokeWidth, ...props }: any) {
+    const { colors } = useAppTheme();
+    return <Ionicons name={name} size={size} color={color ?? colors.text} {...props} />;
+  };
 }
 
 export const AlertTriangle = createIcon('warning-outline');
@@ -33,4 +35,3 @@ export const Upload = createIcon('cloud-upload-outline');
 export const Volume2 = createIcon('volume-high-outline');
 export const User = createIcon('person-outline');
 export const UserPlus = createIcon('person-add-outline');
-
