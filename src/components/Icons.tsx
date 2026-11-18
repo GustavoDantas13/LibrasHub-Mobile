@@ -1,13 +1,11 @@
 import React from 'react';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useAppTheme } from '../contexts/ThemeContext';
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 
 function createIcon(name: IoniconName): React.ComponentType<any> {
-  return function AppIcon({ size = 24, color, strokeWidth: _strokeWidth, ...props }: any) {
-    const { colors } = useAppTheme();
-    return <Ionicons name={name} size={size} color={color ?? colors.text} {...props} />;
-  };
+  return ({ size = 24, color = '#172033', strokeWidth: _strokeWidth, ...props }: any) => (
+    <Ionicons name={name} size={size} color={color} {...props} />
+  );
 }
 
 export const AlertTriangle = createIcon('warning-outline');
@@ -20,10 +18,12 @@ export const Clock = createIcon('time-outline');
 export const Eye = createIcon('eye-outline');
 export const FileVideo = createIcon('videocam-outline');
 export const Heart = createIcon('heart-outline');
+export const HeartFilled = createIcon('heart');
 export const HelpCircle = createIcon('help-circle-outline');
 export const ImageIcon = createIcon('image-outline');
 export const LogOut = createIcon('log-out-outline');
 export const Mail = createIcon('mail-outline');
+export const Location = createIcon('location-outline');
 export const Menu = createIcon('menu-outline');
 export const Search = createIcon('search-outline');
 export const Send = createIcon('send-outline');
@@ -35,3 +35,8 @@ export const Upload = createIcon('cloud-upload-outline');
 export const Volume2 = createIcon('volume-high-outline');
 export const User = createIcon('person-outline');
 export const UserPlus = createIcon('person-add-outline');
+export const People = createIcon('people-outline');
+
+
+export const Home = createIcon('home-outline');
+export const ArrowBack = createIcon('arrow-back-outline');

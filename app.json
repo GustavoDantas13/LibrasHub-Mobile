@@ -14,7 +14,10 @@
     "scheme": "librashub",
     "plugins": [
       "expo-secure-store",
-      "expo-video"
+      "expo-video",
+      "expo-notifications",
+      "expo-document-picker",
+      "expo-sharing"
     ]
   }
 }

@@ -4,9 +4,32 @@ import { fetch as expoFetch } from 'expo/fetch';
 export const API_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://192.168.1.11/librashub-api';
 export const MEDIA_URL = process.env.EXPO_PUBLIC_MEDIA_URL ?? API_URL.replace(/\/librashub-api\/?$/, '');
 
-export function criarUrlArquivo(caminho: string) {
-  if (/^https?:\/\//i.test(caminho)) return caminho;
-  return encodeURI(`${MEDIA_URL.replace(/\/$/, '')}/${caminho.replace(/^\/+/, '')}`);
+/** Normaliza imagens do web para o caminho HTTP efetivamente servido pelo Apache.
+ * EXPO_PUBLIC_MEDIA_URL = origem web que contém /static (XAMPP: http://IP/librashub).
+ */
+export function criarUrlArquivo(caminho: string): string {
+  const source = caminho.trim().replace(/\\/g, '/');
+  const marker = source.toLowerCase().indexOf('static/uploads/');
+  const isAbsolute = /^https?:\/\//i.test(source);
+  if (isAbsolute && marker < 0) return encodeURI(source);
+
+  let relative = marker >= 0
+    ? source.slice(marker)
+    : source.replace(/^(?:\.\.\/|\.\/)+/, '').replace(/^\/+/, '');
+  if (/^(?:uploads\/|avatars\/|profiles\/)/i.test(relative)) {
+    relative = 'static/' + (/^uploads\//i.test(relative) ? relative : 'uploads/' + relative);
+  }
+
+  const apiOrigin = API_URL.match(/^https?:\/\/[^/]+/i)?.[0] || '';
+  const host = apiOrigin.replace(/^https?:\/\//i, '');
+  const isLocal = /^(?:localhost|127\.0\.0\.1|192\.168\.|10\.|172\.(?:1[6-9]|2\d|3[01])\.)/i.test(host);
+  const configuredRoot = MEDIA_URL.replace(/\/+$/, '');
+  // Com a API local em /librashub-api e a instalação web em /librashub,
+  // o endereço /static sozinho não corresponde ao diretório XAMPP do usuário.
+  const root = isLocal && configuredRoot === apiOrigin
+    ? configuredRoot + '/librashub'
+    : configuredRoot;
+  return encodeURI(`${root}/${relative.replace(/^\/+/, '')}`);
 }
 
 type ApiOptions = RequestInit & { autenticado?: boolean };

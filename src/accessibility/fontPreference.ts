@@ -3,7 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 import { FontSize } from '../types';
 
 const STORAGE_KEY = 'librashub_font_size';
-const escalas: Record<FontSize, number> = { normal: 1, large: 1.15, extra: 1.3 };
+const escalas: Record<FontSize, number> = { normal: 1, large: 1.15, extra: 1.3, huge: 1.45 };
 let valorAtual: FontSize = 'normal';
 let carregado = false;
 const ouvintes = new Set<() => void>();
@@ -20,7 +20,7 @@ async function carregar() {
   carregado = true;
   try {
     const salvo = await SecureStore.getItemAsync(STORAGE_KEY);
-    if (salvo === 'normal' || salvo === 'large' || salvo === 'extra') {
+    if (salvo === 'normal' || salvo === 'large' || salvo === 'extra' || salvo === 'huge') {
       valorAtual = salvo;
       avisar();
     }

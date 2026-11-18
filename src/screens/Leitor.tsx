@@ -6,8 +6,9 @@ import Text from '../components/AppText';
 import Button from '../components/Button';
 import ScreenTitle from '../components/ScreenTitle';
 import { Camera, Trash2, Volume2 } from '../components/Icons';
+import { COLORS } from '../constants/colors';
 import { enviarFrame, limparTraducao, RespostaFrame } from '../api/traducao';
-import { useAppTheme } from '../contexts/ThemeContext';
+import { styles } from '../styles/styles';
 
 const INTERVALO_CAPTURA_MS = 0;
 const PRIMEIRA_CAPTURA_MS = 0;
@@ -49,7 +50,6 @@ function escolherTamanhoFrame(tamanhos: string[]) {
 }
 
 export default function Reader() {
-  const { colors, styles } = useAppTheme();
   const cameraRef = useRef<CameraView>(null);
   const sessaoRef = useRef(
     `mobile-${Date.now()}-${Math.random().toString(36).slice(2)}`,
@@ -201,6 +201,7 @@ export default function Reader() {
 
   const parar = useCallback(() => {
     ativoRef.current = false;
+    cameraProntaRef.current = false;
     setActive(false);
     setStatus('Câmera inativa');
     setMaoDetectada(false);
@@ -252,6 +253,7 @@ export default function Reader() {
     }
 
     timerRef.current = null;
+    cameraProntaRef.current = false;
     ativoRef.current = true;
 
     setActive(true);
@@ -290,13 +292,13 @@ export default function Reader() {
       />
 
       <View style={styles.cameraBox}>
-        {permission?.granted ? (
+        {permission?.granted && active ? (
           <CameraView
             ref={cameraRef}
             style={styles.cameraPreview}
             facing={facing}
             mirror={facing === 'front'}
-            active={active}
+            active
             animateShutter={false}
             pictureSize={pictureSize}
             onCameraReady={() => {
@@ -347,7 +349,9 @@ export default function Reader() {
             />
 
             <Text style={styles.cameraText}>
-              Autorize a câmera para começar
+              {permission?.granted
+                ? 'Câmera desligada'
+                : 'Autorize a câmera para começar'}
             </Text>
           </>
         )}
@@ -417,7 +421,7 @@ export default function Reader() {
         >
           <Camera
             size={17}
-            color={colors.text}
+            color={COLORS.text}
           />
 
           <Text style={styles.squareButtonText}>
@@ -431,7 +435,7 @@ export default function Reader() {
         >
           <Trash2
             size={17}
-            color={colors.text}
+            color={COLORS.text}
           />
 
           <Text style={styles.squareButtonText}>

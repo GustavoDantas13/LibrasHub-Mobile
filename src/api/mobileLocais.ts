@@ -1,0 +1,15 @@
+import { File } from 'expo-file-system';
+import { apiFetch } from './api';
+export type LocalWeb={id_local:number;id_usuario_criador:number;nome:string;descricao:string;tipo:string;cep:string;logradouro:string;numero:string;complemento?:string;bairro:string;cidade:string;uf:string;horario_funcionamento:string;datas_funcionamento?:string;acessibilidades:string|string[];imagem_principal:string;galeria?:string|string[];latitude?:number|null;longitude?:number|null;coordinates_confirmed?:number;status:string;nota_media:number|null;total_avaliacoes:number;visualizacoes?:number};
+export type Avaliacao={id_avaliacao:number;id_usuario:number;nm_usuario:string;nota:number;resenha:string;criado_em:string};
+export type CamposLocal=Pick<LocalWeb,'nome'|'descricao'|'tipo'|'cep'|'logradouro'|'numero'|'bairro'|'cidade'|'uf'|'horario_funcionamento'> & {complemento?:string;datas_funcionamento?:string;acessibilidades:string;latitude?:number|null;longitude?:number|null;coordinates_confirmed?:number;imagens?:{uri:string;fileName?:string|null;mimeType?:string|null}[]};
+const url=(action:string,params?:Record<string,string|number>)=>'mobile/locais.php?action='+action+(params?'&'+new URLSearchParams(Object.entries(params).map(([k,v])=>[k,String(v)])).toString():'');
+const save=(action:string,body:Record<string,unknown>)=>apiFetch(url(action),{method:'POST',body:JSON.stringify(body)});
+export const listaLocaisWeb=()=>apiFetch<{locais:LocalWeb[]}>(url('list'));
+export const locaisPopulares=()=>apiFetch<{locais:LocalWeb[]}>(url('popular'));
+export const detalhesLocal=(id:number)=>apiFetch<{local:LocalWeb;avaliacoes:Avaliacao[]}>(url('detail',{id}));
+export const consultarCEP=async(cep:string)=>{const digits=cep.replace(/\D/g,'');if(digits.length!==8)throw new Error('Informe um CEP com oito dígitos.');const r=await fetch(`https://viacep.com.br/ws/${digits}/json/`);const j=await r.json();if(!r.ok||j.erro)throw new Error('CEP não encontrado.');return j as {logradouro:string;complemento:string;bairro:string;localidade:string;uf:string};};
+export const localizarEndereco=(dados:Partial<CamposLocal>)=>save('geocode_preview',dados);
+export const salvarLocal=(dados:CamposLocal,id?:number)=>{const f=new FormData();for(const [key,value] of Object.entries(dados)){if(key!=='imagens'&&value!==undefined&&value!==null)f.append(key,String(value));}if(id)f.append('id',String(id));(dados.imagens||[]).forEach((a,i)=>f.append('imagens[]',new File(a.uri),a.fileName||`local-${i}.jpg`));return apiFetch(url(id?'update':'create'),{method:'POST',body:f});};
+export const removerLocal=(id:number)=>save('delete',{id});
+export const avaliarLocal=(id:number,nota:number,resenha:string)=>save('review',{id,nota,resenha});

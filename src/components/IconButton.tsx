@@ -1,14 +1,25 @@
 import React from 'react';
-import { ScrollView, StatusBar, TextInput, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { TouchableOpacity } from 'react-native';
 import { IconType } from '../types';
-import { ChevronLeft } from './Icons';
-import { useAppTheme } from '../contexts/ThemeContext';
+import { styles } from '../styles/styles';
+import { useAccessibilityPreferences } from '../accessibility/preferences';
+
 export default function IconButton({ icon: Icon, onPress }: { icon: IconType; onPress: () => void }) {
-  const { colors, styles } = useAppTheme();
+  const { largeTouchTargets } = useAccessibilityPreferences();
+
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.8} style={styles.headerIcon}>
-      <Icon size={20} strokeWidth={2} color={colors.onNavy} />
+    <TouchableOpacity
+      accessibilityRole="button"
+      accessibilityLabel="Abrir menu"
+      onPress={onPress}
+      activeOpacity={0.8}
+      hitSlop={largeTouchTargets ? 6 : undefined}
+      style={[
+        styles.headerIcon,
+        largeTouchTargets && { width: 48, height: 48 },
+      ]}
+    >
+      <Icon size={20} strokeWidth={2} color="#FFFFFF" />
     </TouchableOpacity>
   );
 }

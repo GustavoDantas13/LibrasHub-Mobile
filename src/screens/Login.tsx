@@ -7,10 +7,9 @@ import AuthLayout from '../components/AuthLayout';
 import Button from '../components/Button';
 import Field from '../components/Field';
 import { Mail } from '../components/Icons';
-import { useAppTheme } from '../contexts/ThemeContext';
+import { styles } from '../styles/styles';
 
 export default function Login({ setPage }: { setPage: (p: Page) => void }) {
-  const { styles } = useAppTheme();
   const { entrar } = useAuth();
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');

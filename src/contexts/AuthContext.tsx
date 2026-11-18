@@ -1,17 +1,19 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { cadastrar as cadastrarApi, login as loginApi, logout as logoutApi } from '../api/auth';
+import { cadastrar as cadastrarApi, login as loginApi, logout as logoutApi, TipoCadastro } from '../api/auth';
 import { buscarToken, removerToken, salvarToken } from '../api/token';
 import { atualizarUsuario, buscarUsuario, excluirUsuario } from '../api/usuario';
 import { Usuario } from '../types';
+import { salvarPerfilCompleto, AnexoPerfil } from '../api/perfil';
 
 type AuthContextValue = {
   usuario: Usuario | null;
   carregando: boolean;
   entrar: (email: string, senha: string) => Promise<void>;
-  cadastrar: (nome: string, email: string, senha: string) => Promise<void>;
+  cadastrar: (nome: string, email: string, senha: string, tipoUsuario: TipoCadastro) => Promise<void>;
   sair: () => Promise<void>;
   atualizarPerfil: (nome: string, email: string) => Promise<void>;
   excluirConta: () => Promise<void>;
+  atualizarPerfilCompleto: (nome:string,email:string,visibilidade:'visivel'|'oculto',foto?:AnexoPerfil|null,capa?:AnexoPerfil|null) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -40,8 +42,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await salvarToken(resposta.token);
     setUsuario(resposta.usuario);
   }
-  async function cadastrar(nome: string, email: string, senha: string) {
-    await cadastrarApi(nome, email, senha);
+  async function cadastrar(nome: string, email: string, senha: string, tipoUsuario: TipoCadastro) {
+    await cadastrarApi(nome, email, senha, tipoUsuario);
     await entrar(email, senha);
   }
   async function sair() {
@@ -51,13 +53,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function atualizarPerfil(nome: string, email: string) {
     setUsuario((await atualizarUsuario(nome, email)).usuario);
   }
+  async function atualizarPerfilCompleto(nome:string,email:string,visibilidade:'visivel'|'oculto',foto?:AnexoPerfil|null,capa?:AnexoPerfil|null) {
+    const resultado=await salvarPerfilCompleto(nome,email,visibilidade,foto,capa);
+    setUsuario(resultado.usuario);
+  }
   async function excluirConta() {
     await excluirUsuario();
     await removerToken();
     setUsuario(null);
   }
 
-  const valor = useMemo(() => ({ usuario, carregando, entrar, cadastrar, sair, atualizarPerfil, excluirConta }), [usuario, carregando]);
+  const valor = useMemo(() => ({ usuario, carregando, entrar, cadastrar, sair, atualizarPerfil, atualizarPerfilCompleto, excluirConta }), [usuario, carregando]);
   return <AuthContext.Provider value={valor}>{children}</AuthContext.Provider>;
 }
 
